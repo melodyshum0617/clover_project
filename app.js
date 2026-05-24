@@ -79,13 +79,14 @@ app.get('/', (req, res) => { res.sendFile(path.join(__dirname, 'index.html')); }
 // GET API: 撈取資料 (加入圖片連結)
 app.get('/api/clovers', (req, res) => {
     const readDb = new sqlite3.Database(dbPath);
-    const { search, sort } = req.query;
+    const { search, category } = req.query;
 
     let sqlQuery = `
         SELECT 
             i.item_id, 
             i.item_name AS 藏品名稱, 
             i.category,
+            i.leaf_count AS 葉數, -- 🌟 撈出葉數，讓前端能正確判斷特徵
             i.image_url, -- 🌟 撈出圖片連結
             o.city AS 城市, 
             o.place_name AS 採集地點, 
@@ -98,14 +99,23 @@ app.get('/api/clovers', (req, res) => {
     `;
     let params = [];
     if (search) {
-        sqlQuery += ` AND i.item_name LIKE ?`;
-        params.push(`%${search}%`);
+        sqlQuery += ` AND (
+            i.item_name LIKE ? 
+            OR i.category LIKE ? 
+            OR o.city LIKE ? 
+            OR o.place_name LIKE ? 
+            OR p.storage_method LIKE ?
+            OR p.condition LIKE ?
+            OR (CASE WHEN i.leaf_count IS NOT NULL AND i.leaf_count != '' THEN i.leaf_count || ' 葉草' ELSE '週邊商品' END) LIKE ?
+        )`;
+        const searchParam = `%${search}%`;
+        params.push(searchParam, searchParam, searchParam, searchParam, searchParam, searchParam, searchParam);
     }
-    if (sort === 'newest') {
-        sqlQuery += ` ORDER BY i.item_id DESC`;
-    } else {
-        sqlQuery += ` ORDER BY i.item_id ASC`;
+    if (category && category !== 'all') {
+        sqlQuery += ` AND i.category = ?`;
+        params.push(category);
     }
+    sqlQuery += ` ORDER BY i.item_id DESC`;
 
     readDb.all(sqlQuery, params, (err, rows) => {
         if (err) res.status(500).json({ error: err.message });

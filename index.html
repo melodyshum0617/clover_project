@@ -126,11 +126,13 @@
             <div class="toolbar">
                 <div class="search-box">
                     <span class="search-icon">🔍</span>
-                    <input type="text" id="searchInput" placeholder="搜尋藏品關鍵字 (SQL LIKE)...">
+                    <input type="text" id="searchInput" placeholder="搜尋名稱、類別、特徵、地點、保存或狀態...">
                 </div>
-                <select id="sortInput" style="width: 180px; background: white;">
-                    <option value="newest">🆕 最新建立</option>
-                    <option value="oldest">🕰️ 最舊建立</option>
+                <select id="categoryFilter" style="width: 180px; background: white;">
+                    <option value="all">📂 全部類別</option>
+                    <option value="實體植物">🌱 實體植物</option>
+                    <option value="週邊小物">🎁 週邊小物</option>
+                    <option value="手工製作">🪡 手工製作</option>
                 </select>
             </div>
 
@@ -145,9 +147,9 @@
         // 載入畫廊
         async function loadClovers() {
             const search = document.getElementById('searchInput').value;
-            const sort = document.getElementById('sortInput').value;
+            const category = document.getElementById('categoryFilter').value;
             try {
-                const response = await fetch(`${API_URL}?search=${search}&sort=${sort}`);
+                const response = await fetch(`${API_URL}?search=${search}&category=${category}`);
                 const data = await response.json();
                 const gallery = document.getElementById('galleryGrid');
                 gallery.innerHTML = ''; 
@@ -203,7 +205,7 @@
         }
 
         document.getElementById('searchInput').addEventListener('input', loadClovers);
-        document.getElementById('sortInput').addEventListener('change', loadClovers);
+        document.getElementById('categoryFilter').addEventListener('change', loadClovers);
 
         document.getElementById('cloverForm').addEventListener('submit', async (e) => {
             e.preventDefault();

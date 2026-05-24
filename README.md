@@ -9,4 +9,4 @@
 - **多維度動態篩選**：支援 SQL `LIKE` 模糊搜尋與即時類別條件交集過濾。
 
 ## 📸 系統運行截圖
-<img width="1376" height="792" alt="螢幕截圖 2026-05-24 上午11 25 19" src="https://github.com/user-attachments/assets/2e52c630-74ec-4a41-a27b-d795900cb333" />
+<img width="1358" height="762" alt="螢幕截圖 2026-05-24 下午12 15 10" src="https://github.com/user-attachments/assets/270636c5-e296-4828-ae03-b4c8cd701833" />

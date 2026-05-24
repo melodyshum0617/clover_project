@@ -2,13 +2,13 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>幸運草智慧典藏PRO | 上傳真實收藏</title>
+    <title>幸運草智慧典藏PRO | 我的收藏博物館</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #10b981; --primary-dark: #059669; --bg-color: #f8fafc; --surface: #ffffff; --text-main: #0f172a; --text-muted: #64748b; --border-color: #e2e8f0; --danger: #ef4444; }
         body { font-family: 'Noto Sans TC', sans-serif; background-color: var(--bg-color); margin: 0; padding: 0; color: var(--text-main); -webkit-font-smoothing: antialiased; }
         .navbar { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color); padding: 15px 40px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center;}
-        .navbar h1 { margin: 0; font-size: 20px; font-weight: 900; color: var(--primary-dark); }
+        .navbar h1 { margin: 0; font-size: 20px; font-weight: 900; color: var(--primary-dark); flex-shrink: 0; }
         .navbar .badge { background: #d1fae5; color: #065f46; font-size: 11px; padding: 3px 8px; border-radius: 20px; font-weight: 700;}
         
         .layout-grid { display: grid; grid-template-columns: 300px 1fr; gap: 30px; max-width: 1400px; margin: 30px auto; padding: 0 40px; align-items: start;}
@@ -19,7 +19,6 @@
         input, select { width: 100%; padding: 10px 12px; background: #f8fafc; border: 1px solid var(--border-color); border-radius: 8px; font-size: 13px; font-family: inherit; color: var(--text-main); box-sizing: border-box; }
         input:focus, select:focus { outline: none; background: white; border-color: var(--primary); }
         
-        /* 🔥 新加入：檔案上傳框樣式化 */
         input[type="file"] { padding: 8px 10px; background: white; border: 1px dashed var(--border-color); font-size: 12px;}
         input[type="file"]::file-selector-button { background: #f1f5f9; color: #1e293b; border: 1px solid #e2e8f0; padding: 4px 8px; border-radius: 6px; font-size: 12px; cursor: pointer;}
         input[type="file"]::file-selector-button:hover { background: #e2e8f0;}
@@ -46,20 +45,24 @@
         .card-body { padding: 18px; }
         .card-title { font-size: 16px; font-weight: 900; margin: 0 0 10px 0; color: var(--text-main); }
         .card-info { font-size: 12px; color: var(--text-muted); line-height: 1.7; margin-bottom: 12px; }
-        .btn-delete { background: #fff1f2; color: var(--danger); border: 1px solid #ffe4e6; width: 100%; padding: 8px; border-radius: 7px; font-size: 12px; font-weight: 700; cursor: pointer; }
+        .btn-delete { background: #fff1f2; color: var(--danger); border: 1px solid #ffe4e6; width: 100%; padding: 8px; border-radius: 7px; font-size: 12px; font-weight: 700; cursor: pointer; border-style: solid; }
         .btn-delete:hover { background: var(--danger); color: white; }
     </style>
 </head>
 <body>
 
     <nav class="navbar">
-        <h1>🍀 Clover Archive <span class="badge">PRO 真實收藏版</span></h1>
+        <h1>🍀CLOVER MUSEUM🍀 <span class="badge">PRO 收藏版 by沈思妤</span></h1>
+        <div style="font-size: 12px; color: var(--text-muted); max-width: 520px; text-align: right; line-height: 1.6; font-weight: 500;">
+            本館致力於數位化典藏幸運草實體標本與珍貴週邊。系統導入關聯式資料庫架構，<br>
+            並支援高效條件篩選與即時照片傳輸，旨在打造最完整的幸運草智慧典藏圖鑑。
+        </div>
     </nav>
     
     <div class="layout-grid">
         <aside>
             <div class="panel">
-                <h2 class="panel-title">📥 典藏物件入庫登記</h2>
+                <h2 class="panel-title">📥 收藏品登記</h2>
                 <form id="cloverForm">
                     <div class="form-group">
                         <label>藏品名稱</label>
@@ -71,6 +74,7 @@
                             <select id="category">
                                 <option value="實體植物">實體植物</option>
                                 <option value="週邊小物">週邊小物</option>
+                                <option value="手工製作">手工製作</option>
                             </select>
                         </div>
                         <div>
@@ -80,22 +84,22 @@
                     </div>
                     
                     <div class="form-group">
-                        <label>藏品照片上傳 (🌟請選擇你的真實照片)</label>
+                        <label>藏品照片上傳 (🌟請選擇照片)</label>
                         <input type="file" id="imageFile" name="imageFile" accept="image/*">
                     </div>
 
                     <div class="form-group">
-                        <label>地理位置與地點</label>
+                        <label>地理位置與地點（採集或購買）</label>
                         <div style="display: flex; gap: 10px;">
                             <select id="city" style="width: 90px;">
-                                <option value="台北">台北</option>
-                                <option value="香港">香港</option>
+                                <option value="國內">國內</option>
+                                <option value="國外">國外</option>
                             </select>
-                            <input type="text" id="placeName" placeholder="具體地點..." required>
+                            <input type="text" id="placeName" placeholder="具體國家與地點..." required>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>保存技術 / 目前狀態</label>
+                        <label>保存與狀態</label>
                         <div style="display: flex; gap: 10px;">
                             <input type="text" id="storageMethod" placeholder="如：真空封裝" required>
                             <select id="condition" style="width: 100px;">
@@ -105,7 +109,8 @@
                             </select>
                         </div>
                     </div>
-                    <input type="hidden" id="method" value="自然採集"> <button type="submit" class="btn-primary">上傳檔案並寫入核心庫</button>
+                    <input type="hidden" id="method" value="自然採集"> 
+                    <button type="submit" class="btn-primary">上傳檔案並寫入博物館</button>
                 </form>
             </div>
 
@@ -137,7 +142,7 @@
         const API_URL = 'http://localhost:4000/api/clovers';
         const statusColors = { '完美': 'background: rgba(16, 185, 129, 0.95);', '良好': 'background: rgba(59, 130, 246, 0.95);', '褪色': 'background: rgba(245, 158, 11, 0.95);' };
 
-        // 載入畫廊 (處理圖片連結)
+        // 載入畫廊
         async function loadClovers() {
             const search = document.getElementById('searchInput').value;
             const sort = document.getElementById('sortInput').value;
@@ -148,22 +153,22 @@
                 gallery.innerHTML = ''; 
                 
                 data.forEach((item, index) => {
-                    // 🌟 核心修正：直接使用資料庫存儲的圖片網址。
-                    // 它可以是 `/uploads/` 開頭的實體檔案路徑，也可以是 `https://` 開頭的預設 Unsplash 網址。
                     const imgSrc = item.image_url; 
-                    
-                    const badgeStyle = statusColors[item.目前狀態] || 'background: #64748b;';
+                    const badgeStyle = statusColors[item.currently_status || item.currently_status] || statusColors[item.目前狀態] || 'background: #64748b;';
                     const delay = index * 0.03;
 
+                    // 🌟 呈現全套精美欄位
                     const cardHtml = `
                         <div class="card" style="animation-delay: ${delay}s">
                             <div style="position: relative;">
                                 <img src="${imgSrc}" class="card-img" alt="收藏照片">
-                                <span class="status-pill" style="${badgeStyle}">${item.目前狀態}</span>
+                                <span class="status-pill" style="${badgeStyle}">${item.currently_status || item.目前狀態}</span>
                             </div>
                             <div class="card-body">
                                 <h3 class="card-title">${item.藏品名稱}</h3>
-                                <div class="card-info">
+                                <div class="card-info" style="font-size: 13px; line-height: 1.8; color: #475569;">
+                                    🏷️ <b>類別：</b>${item.category || item.類別 || '週邊小物'}<br>
+                                    ☘️ <b>特徵：</b>${item.葉數 ? `${item.葉數} 葉草` : '週邊商品'}<br>
                                     📍 <b>地點：</b>${item.城市} · ${item.採集地點}<br>
                                     📦 <b>保存：</b>${item.保存方式}
                                 </div>
@@ -183,7 +188,7 @@
                 const container = document.getElementById('statsContainer');
                 container.innerHTML = '';
                 stats.forEach(stat => {
-                    container.innerHTML += `<div class="kpi-card"><div class="kpi-city">🌍 產地：${stat.城市}</div><div class="kpi-value">${stat.總數量} <small>筆</small></div><div class="kpi-sub">☘️ 標本平均葉數：<b>${stat.平均葉數 || 'N/A'}</b> 葉</div></div>`;
+                    container.innerHTML += `<div class="kpi-card"><div class="kpi-city">🌍 產地：${stat.城市}</div><div class="kpi-value">${stat.總數量} <small>筆</small></div><div class="kpi-sub" style="font-size: 12px; margin-top: 4px; color: #166534;">☘️ 標本平均葉數：<b>${stat.平均葉數 || 'N/A'}</b> 葉</div></div>`;
                 });
             } catch (err) { console.error(err); }
         }
@@ -200,7 +205,6 @@
         document.getElementById('searchInput').addEventListener('input', loadClovers);
         document.getElementById('sortInput').addEventListener('change', loadClovers);
 
-        // 🔥 大升級！表單提交邏輯
         document.getElementById('cloverForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = e.target.querySelector('button');
@@ -208,10 +212,7 @@
             btn.innerText = "檔案傳輸與資料寫入中...";
             btn.style.opacity = '0.7';
 
-            // 🌟 核心：使用 FormData 對象，才能傳送圖片二進位檔案
             const formData = new FormData();
-            
-            // 將所有表單欄位塞入 FormData
             formData.append('itemName', document.getElementById('itemName').value);
             formData.append('category', document.getElementById('category').value);
             formData.append('leafCount', document.getElementById('leafCount').value);
@@ -221,17 +222,15 @@
             formData.append('storageMethod', document.getElementById('storageMethod').value);
             formData.append('condition', document.getElementById('condition').value);
             
-            // 🌟 抓取檔案輸入框裡的使用者實體檔案，並塞入 FormData
             const imageFileInput = document.getElementById('imageFile');
             if (imageFileInput.files.length > 0) {
-                formData.append('imageFile', imageFileInput.files[0]); // 'imageFile' 的檔名要跟後端 upload.single('imageFile') 一樣
+                formData.append('imageFile', imageFileInput.files[0]);
             }
 
             try {
-                // 發送請求 (🌟注意：不需要設定 Content-Type，瀏覽器會自動設成 multipart/form-data)
                 const response = await fetch(API_URL, {
                     method: 'POST',
-                    body: formData // 直接把 FormData 丟進去
+                    body: formData
                 });
 
                 if (response.ok) {

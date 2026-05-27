@@ -1,0 +1,95 @@
+import os
+
+svg_content = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 800" width="1000" height="800">
+  <defs>
+    <!-- 現代化軟陰影效果 -->
+    <filter id="premium-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#0F172A" flood-opacity="0.22" />
+    </filter>
+  </defs>
+
+  <!-- 1. 背景畫布色 (與簡報投影片背景完美融合) -->
+  <rect width="1000" height="800" fill="#F4EFEB" />
+
+  <!-- 2. 程式碼卡片外殼 (Mac風格視窗) -->
+  <g filter="url(#premium-shadow)">
+    <!-- 視窗主體 -->
+    <rect x="50" y="80" width="900" height="640" rx="16" ry="16" fill="#0D1117" stroke="#30363D" stroke-width="1.5" />
+    
+    <!-- 視窗標題列 -->
+    <path d="M 50 96 A 16 16 0 0 1 66 80 L 934 80 A 16 16 0 0 1 950 96 L 950 130 L 50 130 Z" fill="#161B22" />
+    <line x1="50" y1="130" x2="950" y2="130" stroke="#30363D" stroke-width="1" />
+
+    <!-- Mac 控制紅綠燈按鈕 -->
+    <circle cx="85" cy="105" r="7" fill="#FF5F56" />
+    <circle cx="107" cy="105" r="7" fill="#FFBD2E" />
+    <circle cx="129" cy="105" r="7" fill="#27C93F" />
+
+    <!-- 視窗標題文字 -->
+    <text x="500" y="110" font-family="'Consolas', 'Fira Code', 'Noto Sans TC', sans-serif" font-size="14" font-weight="bold" fill="#8B949E" text-anchor="middle">clover_database_schema.sql</text>
+  </g>
+
+  <!-- 3. 程式碼內容 (高質感程式碼高亮顏色) -->
+  <!-- 
+    顏色定義:
+    - 註解 (Comment): #8B949E (灰)
+    - 關鍵字 (Keyword): #FF7B72 (亮橘紅)
+    - 資料表與欄位 (Identifier): #79C0FF (淺藍)
+    - 字串/函數 (Value): #A5D6FF (淡藍) 或 #7EE787 (綠)
+    - 數字 (Number): #D2A8FF (紫)
+  -->
+  <g font-family="'Consolas', 'Fira Code', 'Courier New', monospace" font-size="20" xml:space="preserve">
+    
+    <!-- 區塊一：主表寫入 -->
+    <text x="90" y="180" fill="#8B949E" font-style="italic">-- 步驟一：將藏品核心資料與圖片寫入「主表」</text>
+    
+    <text x="90" y="220">
+      <tspan fill="#FF7B72">INSERT INTO</tspan> <tspan fill="#79C0FF">Clover_Items</tspan>
+    </text>
+    
+    <text x="120" y="260" fill="#E2E8F0">
+      (item_name, category, leaf_count, image_url, collection_date)
+    </text>
+    
+    <text x="90" y="300">
+      <tspan fill="#FF7B72">VALUES</tspan>
+    </text>
+    
+    <text x="120" y="340">
+      (<tspan fill="#7EE787">'幸運四葉草'</tspan>, <tspan fill="#7EE787">'植物標本'</tspan>, <tspan fill="#D2A8FF">4</tspan>, <tspan fill="#7EE787">'/uploads/pic.png'</tspan>, <tspan fill="#79C0FF">date</tspan>(<tspan fill="#7EE787">'now'</tspan>));
+    </text>
+
+
+    <!-- 區塊二：子表同步 -->
+    <text x="90" y="420" fill="#8B949E" font-style="italic">-- 步驟二：取得主表生成的 item_id，同步寫入「產地子表」</text>
+    
+    <text x="90" y="460">
+      <tspan fill="#FF7B72">INSERT INTO</tspan> <tspan fill="#79C0FF">Origins</tspan> (item_id, city, place_name, method)
+    </text>
+    
+    <text x="90" y="500">
+      <tspan fill="#FF7B72">VALUES</tspan> (<tspan fill="#D2A8FF">lastID</tspan>, <tspan fill="#7EE787">'台北市'</tspan>, <tspan fill="#7EE787">'陽明山'</tspan>, <tspan fill="#7EE787">'手工採集'</tspan>);
+    </text>
+
+
+    <!-- 區塊三：保存子表 -->
+    <text x="90" y="580" fill="#8B949E" font-style="italic">-- 步驟三：同步寫入「保存子表」</text>
+    
+    <text x="90" y="620">
+      <tspan fill="#FF7B72">INSERT INTO</tspan> <tspan fill="#79C0FF">Preservation</tspan> (item_id, storage_method, condition)
+    </text>
+    
+    <text x="90" y="660">
+      <tspan fill="#FF7B72">VALUES</tspan> (<tspan fill="#D2A8FF">lastID</tspan>, <tspan fill="#7EE787">'乾燥壓製'</tspan>, <tspan fill="#7EE787">'保存良好'</tspan>);
+    </text>
+
+  </g>
+
+</svg>
+"""
+
+file_path = "/Users/melodyshum/Desktop/clover_project/sql_code_card.svg"
+with open(file_path, "w", encoding="utf-8") as f:
+    f.write(svg_content.strip())
+
+print(f"SVG generated successfully at {file_path}")

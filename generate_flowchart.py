@@ -1,0 +1,217 @@
+import os
+
+svg_content = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 820" width="1200" height="820">
+  <defs>
+    <!-- 陰影效果 -->
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.12" />
+    </filter>
+    
+    <!-- 箭頭頭部定義 -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748B" />
+    </marker>
+    
+    <marker id="arrow-error" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#EF4444" />
+    </marker>
+  </defs>
+
+  <style>
+    .title { font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif; font-size: 24px; font-weight: bold; fill: #FFFFFF; }
+    .subtitle { font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif; font-size: 16px; fill: #E2E8F0; }
+    .col-title { font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif; font-size: 18px; font-weight: bold; fill: #FFFFFF; text-anchor: middle; }
+    .node-text { font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif; font-size: 13px; font-weight: bold; fill: #FFFFFF; text-anchor: middle; dominant-baseline: middle; }
+    .node-text-dark { font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif; font-size: 13px; font-weight: bold; fill: #0F172A; text-anchor: middle; dominant-baseline: middle; }
+    .arrow-text { font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif; font-size: 12px; font-weight: bold; fill: #1E293B; text-anchor: middle; }
+    .arrow-text-error { font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif; font-size: 12px; font-weight: bold; fill: #EF4444; text-anchor: middle; }
+    .legend-text { font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif; font-size: 12px; fill: #475569; }
+  </style>
+
+  <!-- 1. 頂部深藍色標題列 -->
+  <rect x="0" y="0" width="1200" height="70" fill="#0B1B3D" />
+  <!-- 頂部左側小圖示 -->
+  <circle cx="40" cy="35" r="18" fill="#1E293B" />
+  <path d="M 33 35 L 47 35 M 40 28 L 40 42 M 35 30 L 45 40 M 35 40 L 45 30" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" />
+  <text x="75" y="43" class="title">系統流程圖 / 以「幸運草智慧典藏PRO」為例</text>
+
+  <!-- 2. 三個垂直泳道欄位 -->
+  
+  <!-- 前端層 -->
+  <rect x="20" y="90" width="375" height="40" fill="#107C75" rx="4" ry="4" filter="url(#shadow)" />
+  <text x="207.5" y="116" class="col-title">前端層 (Browser)</text>
+  <rect x="20" y="130" width="375" height="610" fill="#E6F4F3" fill-opacity="0.5" stroke="#107C75" stroke-width="1" />
+
+  <!-- 後端層 -->
+  <rect x="412.5" y="90" width="375" height="40" fill="#D97706" rx="4" ry="4" filter="url(#shadow)" />
+  <text x="600" y="116" class="col-title">後端層 (Node.js / Express)</text>
+  <rect x="412.5" y="130" width="375" height="610" fill="#FEF3C7" fill-opacity="0.5" stroke="#D97706" stroke-width="1" />
+
+  <!-- 資料庫層 -->
+  <rect x="805" y="90" width="375" height="40" fill="#7C3AED" rx="4" ry="4" filter="url(#shadow)" />
+  <text x="992.5" y="116" class="col-title">資料庫層 (SQLite)</text>
+  <rect x="805" y="130" width="375" height="610" fill="#F3E8FF" fill-opacity="0.5" stroke="#7C3AED" stroke-width="1" />
+
+  <!-- ==================== 前端層節點 ==================== -->
+  
+  <!-- 節點 1: 開始 (橢圓) -->
+  <g filter="url(#shadow)">
+    <ellipse cx="207.5" cy="180" rx="110" ry="22" fill="#2563EB" stroke="#1D4ED8" stroke-width="2" />
+    <text x="207.5" y="180" class="node-text">開始：使用者開啟典藏頁面</text>
+  </g>
+
+  <!-- 節點 2: 填寫表單 (圓角矩形) -->
+  <g filter="url(#shadow)">
+    <rect x="107.5" y="235" width="200" height="44" rx="8" ry="8" fill="#0F766E" stroke="#115E59" stroke-width="2" />
+    <text x="207.5" y="257" class="node-text">填寫藏品表單與上傳圖片</text>
+  </g>
+
+  <!-- 節點 3: 點擊登記寫入 (圓角矩形) -->
+  <g filter="url(#shadow)">
+    <rect x="107.5" y="315" width="200" height="44" rx="8" ry="8" fill="#0F766E" stroke="#115E59" stroke-width="2" />
+    <text x="207.5" y="337" class="node-text">點擊「登記寫入」按鈕</text>
+  </g>
+
+  <!-- 節點 4: 送出 POST (圓角矩形) -->
+  <g filter="url(#shadow)">
+    <rect x="107.5" y="395" width="200" height="44" rx="8" ry="8" fill="#0F766E" stroke="#115E59" stroke-width="2" />
+    <text x="207.5" y="417" class="node-text">送出 HTTP POST (FormData)</text>
+  </g>
+
+
+  <!-- ==================== 後端層節點 ==================== -->
+  
+  <!-- 節點 5: 後端接收 (圓角矩形) -->
+  <g filter="url(#shadow)">
+    <rect x="500" y="395" width="200" height="44" rx="8" ry="8" fill="#B45309" stroke="#92400E" stroke-width="2" />
+    <text x="600" y="417" class="node-text">後端接收並準備判定圖片</text>
+  </g>
+
+  <!-- 節點 6: 圖片判定 (菱形) -->
+  <g filter="url(#shadow)">
+    <polygon points="600,470 690,515 600,560 510,515" fill="#0891B2" stroke="#0E7490" stroke-width="2" />
+    <text x="600" y="515" class="node-text">是否有選取圖片?</text>
+  </g>
+
+  <!-- 節點 7a: 有圖片 (圓角矩形) -->
+  <g filter="url(#shadow)">
+    <rect x="440" y="590" width="145" height="44" rx="8" ry="8" fill="#B45309" stroke="#92400E" stroke-width="2" />
+    <text x="512.5" y="612" class="node-text">儲存圖片至 /uploads</text>
+  </g>
+
+  <!-- 節點 7b: 無圖片 (圓角矩形) -->
+  <g filter="url(#shadow)">
+    <rect x="615" y="590" width="145" height="44" rx="8" ry="8" fill="#B45309" stroke="#92400E" stroke-width="2" />
+    <text x="687.5" y="612" class="node-text">自動匹配系統預設圖片</text>
+  </g>
+
+  <!-- 節點 8: 執行 SQL INSERT (圓角矩形) -->
+  <g filter="url(#shadow)">
+    <rect x="495" y="665" width="210" height="44" rx="8" ry="8" fill="#B45309" stroke="#92400E" stroke-width="2" />
+    <text x="600" y="687" class="node-text">執行 SQL INSERT 寫入關聯表</text>
+  </g>
+
+
+  <!-- ==================== 資料庫層節點 ==================== -->
+  
+  <!-- 節點 9: 資料庫寫入 (圓柱形) -->
+  <g filter="url(#shadow)">
+    <!-- 圓柱頂部 -->
+    <path d="M 890 687 C 890 677, 1090 677, 1090 687 C 1090 697, 890 697, 890 687 Z" fill="#7C3AED" stroke="#5B21B6" stroke-width="2" />
+    <!-- 圓柱身體 -->
+    <path d="M 890 687 L 890 717 C 890 727, 1090 727, 1090 717 L 1090 687 Z" fill="#6D28D9" stroke="#5B21B6" stroke-width="2" />
+    <!-- 圓柱頂部疊加邊線 -->
+    <ellipse cx="990" cy="687" rx="100" ry="10" fill="none" stroke="#5B21B6" stroke-width="2" />
+    <text x="990" y="705" class="node-text">資料庫寫入成功 (聯級同步)</text>
+  </g>
+
+
+  <!-- ==================== 後端返回與前端結束 ==================== -->
+  
+  <!-- 節點 10: 回傳 200 (圓角矩形) - 放置在後端層下方 -->
+  <g filter="url(#shadow)">
+    <rect x="500" y="235" width="200" height="44" rx="8" ry="8" fill="#B45309" stroke="#92400E" stroke-width="2" />
+    <text x="600" y="257" class="node-text">回傳 200 成功回應</text>
+  </g>
+
+  <!-- 節點 11: 結束 (橢圓) -->
+  <g filter="url(#shadow)">
+    <ellipse cx="207.5" cy="515" rx="110" ry="22" fill="#16A34A" stroke="#15803D" stroke-width="2" />
+    <text x="207.5" y="515" class="node-text">前端免重整即時新增卡片</text>
+  </g>
+
+  
+  <!-- ==================== 連接箭頭 ==================== -->
+  
+  <!-- 1 -> 2 -->
+  <path d="M 207.5 202 L 207.5 227" fill="none" stroke="#64748B" stroke-width="3" marker-end="url(#arrow)" />
+  
+  <!-- 2 -> 3 -->
+  <path d="M 207.5 279 L 207.5 307" fill="none" stroke="#64748B" stroke-width="3" marker-end="url(#arrow)" />
+  
+  <!-- 3 -> 4 -->
+  <path d="M 207.5 359 L 207.5 387" fill="none" stroke="#64748B" stroke-width="3" marker-end="url(#arrow)" />
+  
+  <!-- 4 -> 5 (跨欄位：前端 -> 後端) -->
+  <path d="M 307.5 417 L 492 417" fill="none" stroke="#64748B" stroke-width="3" marker-end="url(#arrow)" />
+  
+  <!-- 5 -> 6 -->
+  <path d="M 600 439 L 600 462" fill="none" stroke="#64748B" stroke-width="3" marker-end="url(#arrow)" />
+  
+  <!-- 6 -> 7a (是) -->
+  <path d="M 555 515 L 512.5 515 L 512.5 582" fill="none" stroke="#64748B" stroke-width="3" marker-end="url(#arrow)" />
+  <text x="495" y="545" class="arrow-text">是</text>
+  
+  <!-- 6 -> 7b (否) -->
+  <path d="M 645 515 L 687.5 515 L 687.5 582" fill="none" stroke="#64748B" stroke-width="3" marker-end="url(#arrow)" />
+  <text x="705" y="545" class="arrow-text">否</text>
+  
+  <!-- 7a -> 8 -->
+  <path d="M 512.5 634 L 512.5 650 L 580 650 L 580 657" fill="none" stroke="#64748B" stroke-width="3" marker-end="url(#arrow)" />
+  
+  <!-- 7b -> 8 -->
+  <path d="M 687.5 634 L 687.5 650 L 620 650 L 620 657" fill="none" stroke="#64748B" stroke-width="3" marker-end="url(#arrow)" />
+  
+  <!-- 8 -> 9 (跨欄位：後端 -> 資料庫) -->
+  <path d="M 705 687 L 880 687" fill="none" stroke="#64748B" stroke-width="3" marker-end="url(#arrow)" />
+  
+  <!-- 9 -> 10 (跨欄位向上：資料庫 -> 後端回應) -->
+  <path d="M 990 675 L 990 257 L 708 257" fill="none" stroke="#64748B" stroke-width="3" marker-end="url(#arrow)" />
+  
+  <!-- 10 -> 11 (跨欄位：後端 -> 前端結束) -->
+  <path d="M 600 279 L 600 375 L 340 375 L 340 515 L 325 515" fill="none" stroke="#64748B" stroke-width="3" marker-end="url(#arrow)" />
+  
+  
+  <!-- ==================== 圖例說明 (Legend) ==================== -->
+  <rect x="20" y="760" width="1160" height="45" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1.5" rx="6" ry="6" />
+  
+  <!-- 圖例項 1 -->
+  <ellipse cx="60" cy="782.5" rx="25" ry="10" fill="#2563EB" stroke="#1D4ED8" stroke-width="1" />
+  <text x="95" y="786" class="legend-text">開始/結束 (橢圓)</text>
+  
+  <!-- 圖例項 2 -->
+  <rect x="250" y="772.5" width="50" height="20" rx="4" ry="4" fill="#0F766E" stroke="#115E59" stroke-width="1" />
+  <text x="310" y="786" class="legend-text">前端操作步驟 (圓角矩形)</text>
+
+  <!-- 圖例項 3 -->
+  <rect x="500" y="772.5" width="50" height="20" rx="4" ry="4" fill="#B45309" stroke="#92400E" stroke-width="1" />
+  <text x="560" y="786" class="legend-text">後端處理步驟 (圓角矩形)</text>
+  
+  <!-- 圖例項 4 -->
+  <polygon points="760,772.5 775,782.5 760,792.5 745,782.5" fill="#0891B2" stroke="#0E7490" stroke-width="1" />
+  <text x="785" y="786" class="legend-text">判斷條件 (菱形)</text>
+  
+  <!-- 圖例項 5 -->
+  <ellipse cx="960" cy="779" rx="20" ry="4" fill="#7C3AED" stroke="#5B21B6" stroke-width="1" />
+  <path d="M 940 779 L 940 789 C 940 793, 980 793, 980 789 L 980 779" fill="#6D28D9" stroke="#5B21B6" stroke-width="1" />
+  <ellipse cx="960" cy="779" rx="20" ry="4" fill="none" stroke="#5B21B6" stroke-width="1" />
+  <text x="990" y="786" class="legend-text">資料庫層 (圓柱)</text>
+
+</svg>
+"""
+
+file_path = "/Users/melodyshum/Desktop/clover_project/clover_flowchart.svg"
+with open(file_path, "w", encoding="utf-8") as f:
+    f.write(svg_content.strip())
+
+print(f"SVG file generated at {file_path}")

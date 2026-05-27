@@ -9,6 +9,13 @@ const port = 4000;
 // 設定可以解析 JSON 請求
 app.use(express.json());
 // 設定可以讓網頁公開存取的靜態檔案資料夾 (目前資料夾與 /uploads)
+// 🌟 核心修復：如果網址被瀏覽器快取了帶有斜線的 /index.html/，自動導向回首頁 /，徹底防範 404 錯誤
+app.use((req, res, next) => {
+    if (req.path === '/index.html/' || req.path === '/index.html') {
+        return res.redirect(301, '/');
+    }
+    next();
+});
 app.use(express.static(__dirname));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // 🔥 讓網頁可以存取 /uploads 資料夾下的圖片
 
@@ -90,6 +97,7 @@ app.get('/api/clovers', (req, res) => {
             i.image_url, -- 🌟 撈出圖片連結
             o.city AS 城市, 
             o.place_name AS 採集地點, 
+            o.method AS 獲取方式, -- 🌟 新增撈取獲取方式
             p.storage_method AS 保存方式, 
             p.condition AS 目前狀態
         FROM Clover_Items i
@@ -140,6 +148,35 @@ app.get('/api/stats', (req, res) => {
     });
 });
 
+// GET API: 隨機抽取一筆幸運草 (今日幸運抽卡)
+app.get('/api/clovers/random', (req, res) => {
+    const randomDb = new sqlite3.Database(dbPath);
+    const sqlQuery = `
+        SELECT 
+            i.item_id, 
+            i.item_name, 
+            i.category,
+            i.leaf_count, 
+            i.image_url, 
+            o.city, 
+            o.place_name
+        FROM Clover_Items i
+        JOIN Origins o ON i.item_id = o.item_id
+        ORDER BY RANDOM() LIMIT 1
+    `;
+    randomDb.get(sqlQuery, [], (err, row) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+        } else if (!row) {
+            res.status(404).json({ error: "No clovers in museum yet" });
+        } else {
+            res.json(row);
+        }
+        randomDb.close();
+    });
+});
+
+
 // POST API: 🔥 大升級！改成接收 FormData 與上傳的單張圖片 (upload.single('imageFile'))
 app.post('/api/clovers', upload.single('imageFile'), async (req, res) => {
     const writeDb = new sqlite3.Database(dbPath);
@@ -157,7 +194,7 @@ app.post('/api/clovers', upload.single('imageFile'), async (req, res) => {
         if (itemName && (itemName.includes('鑰匙圈') || itemName.includes('書籤'))) {
             imageUrl = 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=600&q=80'; // 小物 Unsplash
         } else {
-            imageUrl = 'https://images.unsplash.com/photo-1595942928577-714482571448?w=600&q=80'; // 植物 Unsplash
+            imageUrl = 'https://images.unsplash.com/photo-1533240332313-0db49b439ad3?w=600&q=80'; // 🍀 真正的幸運草超美微距 Unsplash (告別花椰菜！)
         }
     }
 

@@ -47,6 +47,89 @@
         .card-info { font-size: 12px; color: var(--text-muted); line-height: 1.7; margin-bottom: 12px; }
         .btn-delete { background: #fff1f2; color: var(--danger); border: 1px solid #ffe4e6; width: 100%; padding: 8px; border-radius: 7px; font-size: 12px; font-weight: 700; cursor: pointer; border-style: solid; }
         .btn-delete:hover { background: var(--danger); color: white; }
+
+        /* 幸運抽卡彈出視窗樣式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 380px;
+            padding: 25px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            text-align: center;
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            border: 2px solid #10b981;
+        }
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #f1f5f9;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+        }
+        .modal-close:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+        .lucky-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin: 15px 0;
+            border: 1px solid #e2e8f0;
+        }
+        .lucky-title {
+            font-size: 18px;
+            font-weight: 900;
+            color: #047857;
+            margin: 8px 0;
+        }
+        .lucky-quote {
+            font-size: 13px;
+            color: #15803d;
+            background: #ecfdf5;
+            padding: 12px;
+            border-radius: 10px;
+            border-left: 4px solid #10b981;
+            margin-top: 15px;
+            font-style: italic;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body>
@@ -109,7 +192,17 @@
                             </select>
                         </div>
                     </div>
-                    <input type="hidden" id="method" value="自然採集"> 
+                    <div class="form-group">
+                        <label>採集或獲取方式</label>
+                        <select id="method">
+                            <option value="自然採集">自然採集 (野生發現)</option>
+                            <option value="線上購買">線上購買 (網購/蝦皮)</option>
+                            <option value="實體店購入">實體店購入 (專賣店/專櫃)</option>
+                            <option value="他人贈送">他人贈送 (演唱會/親友)</option>
+                            <option value="旅途尋獲">旅途尋獲 (出國旅遊求得)</option>
+                            <option value="其他管道">其他管道 (委託代購等)</option>
+                        </select>
+                    </div>
                     <button type="submit" class="btn-primary">上傳檔案並寫入博物館</button>
                 </form>
             </div>
@@ -119,6 +212,13 @@
                 <div class="kpi-grid" id="statsContainer">
                     <div style="color: #94a3b8; font-size: 13px;">伺服器即時運算中...</div>
                 </div>
+            </div>
+
+            <!-- 🌟 亮點功能：今日幸運抽卡 -->
+            <div class="panel" style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 1px solid #a7f3d0; text-align: center;">
+                <h2 class="panel-title" style="color: #065f46; font-size: 15px; margin-bottom: 8px; font-weight: 900;">🌟 今日幸運抽卡</h2>
+                <p style="font-size: 12px; color: #047857; margin: 0 0 15px 0; line-height: 1.5; font-weight: 500;">從你的數位展間中隨機抽取一片幸運草，獲得今日專屬幸福祝福！</p>
+                <button type="button" class="btn-primary" onclick="drawLuckyClover()" style="background: #059669; box-shadow: 0 4px 10px rgba(5, 150, 105, 0.2); width: 100%;">☘️ 抽取我的今日幸運</button>
             </div>
         </aside>
 
@@ -172,6 +272,7 @@
                                     🏷️ <b>類別：</b>${item.category || item.類別 || '週邊小物'}<br>
                                     ☘️ <b>特徵：</b>${item.葉數 ? `${item.葉數} 葉草` : '週邊商品'}<br>
                                     📍 <b>地點：</b>${item.城市} · ${item.採集地點}<br>
+                                    💡 <b>管道：</b>${item.獲取方式 || '自然採集'}<br>
                                     📦 <b>保存：</b>${item.保存方式}
                                 </div>
                                 <button class="btn-delete" onclick="deleteClover(${item.item_id})">🗑️ 聯級刪除 (CASCADE)</button>
@@ -254,6 +355,93 @@
 
         loadClovers();
         loadStats();
+
+        // 🌟【今日幸運占卜籤】極美幸運卡牌數據庫 (非資料庫資料，而是專屬設計的每日御神籤)
+        const LUCKY_FORTUNE_CARDS = [
+            {
+                name: "🌟 大吉 · 璀璨四葉草",
+                image: "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?w=600&q=80",
+                detail: `
+                    ☘️ <b>今日守護：</b>璀璨四葉草<br>
+                    📈 <b>幸運指數：</b>★★★★★ (滿分！)<br>
+                    🔑 <b>今日關鍵字：</b>驚喜、突破、心想事成
+                `,
+                quote: "「深藏在綠意中的第四片葉子已被你尋獲！今天幸運女神將全程眷顧，無論是課業、生活還是人際關係，都將迎來意想不到的順遂與驚喜。勇敢邁出腳步吧！」"
+            },
+            {
+                name: "💫 奇蹟 · 罕見五葉草",
+                image: "https://images.unsplash.com/photo-1533240332313-0db49b439ad3?w=600&q=80",
+                detail: `
+                    ☘️ <b>今日守護：</b>黃金五葉草<br>
+                    📈 <b>幸運指數：</b>★★★★★★ (破表！)<br>
+                    🔑 <b>今日關鍵字：</b>財運大發、奇蹟、大吉大利
+                `,
+                quote: "「突破百萬分之一機率的奇蹟之葉為你綻放！代表健康、財富與名譽的頂級好運正在路上。今天非常適合進行重要決策或大膽嘗試，好運與正能量即將爆棚！」"
+            },
+            {
+                name: "☀️ 中吉 · 溫馨三葉草",
+                image: "https://images.unsplash.com/photo-1533240332313-0db49b439ad3?w=600&q=80",
+                detail: `
+                    ☘️ <b>今日守護：</b>朝陽三葉草<br>
+                    📈 <b>幸運指數：</b>★★★★☆ (極佳！)<br>
+                    🔑 <b>今日關鍵字：</b>希望、療癒、平靜小確幸
+                `,
+                quote: "「代表信仰、希望與愛的三葉草，正散發著溫柔的光芒。今天的生活將充滿令人會心一笑的小確幸，老友的問候或家人的擁抱，會為你注入滿滿的療癒能量。」"
+            },
+            {
+                name: "🌿 小吉 · 初萌雙葉草",
+                image: "https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?w=600&q=80",
+                detail: `
+                    ☘️ <b>今日守護：</b>初萌雙葉新芽<br>
+                    📈 <b>幸運指數：</b>★★★☆☆ (平順！)<br>
+                    🔑 <b>今日關鍵字：</b>成長、起點、蓄勢待發
+                `,
+                quote: "「每一片偉大的四葉草，都始於最初的萌芽。今天代表著『新生與起點』，非常適合靜下心來為未來做規劃，你的努力正如這株新芽，正在泥土下悄悄茁壯成長！」"
+            },
+            {
+                name: "🌸 吉 · 守護粉嫩草",
+                image: "https://images.unsplash.com/photo-1526047932273-341f2a7631f9?w=600&q=80",
+                detail: `
+                    ☘️ <b>今日守護：</b>粉嫩花瓣草<br>
+                    📈 <b>幸運指數：</b>★★★★☆ (人緣爆棚！)<br>
+                    🔑 <b>今日關鍵字：</b>好人緣、溫柔守護、桃花朵朵
+                `,
+                quote: "「綻放的粉嫩幸運花瓣，代表著溫柔的守護。今天你在人際交往中會格外受歡迎，親和力滿分！多給身邊的人一個微笑，這份幸福與幸運會加倍回到你身上喔！」"
+            }
+        ];
+
+        // 隨機抽取今日幸運 (幸運占卜籤)
+        function drawLuckyClover() {
+            const randomIndex = Math.floor(Math.random() * LUCKY_FORTUNE_CARDS.length);
+            const card = LUCKY_FORTUNE_CARDS[randomIndex];
+            
+            // 設定彈出視窗資料
+            document.getElementById('luckyImg').src = card.image;
+            document.getElementById('luckyName').innerText = card.name;
+            document.getElementById('luckyDetail').innerHTML = card.detail;
+            document.getElementById('luckyQuote').innerText = card.quote;
+            
+            // 顯示彈出視窗
+            document.getElementById('luckyModal').classList.add('active');
+        }
+
+        function closeLuckyModal() {
+            document.getElementById('luckyModal').classList.remove('active');
+        }
     </script>
+
+    <!-- 幸運抽卡 Modal 彈出視窗 -->
+    <div class="modal-overlay" id="luckyModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeLuckyModal()">✕</button>
+            <h2 style="font-size: 20px; font-weight: 900; margin: 0 0 10px 0; color: #059669; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                🍀 今日幸運契機 🍀
+            </h2>
+            <img src="" id="luckyImg" class="lucky-img" alt="幸運草照片">
+            <h3 id="luckyName" class="lucky-title"></h3>
+            <div id="luckyDetail" style="font-size: 13px; color: #475569; line-height: 1.7; text-align: left; background: #f8fafc; padding: 12px 18px; border-radius: 10px; width: 85%; margin: 10px auto; border: 1px solid #e2e8f0;"></div>
+            <div id="luckyQuote" class="lucky-quote"></div>
+        </div>
+    </div>
 </body>
 </html>
